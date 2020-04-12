@@ -32,9 +32,8 @@ The requirements for the script was to perform/fulfill the following:
 
 10. Write the new data frame to a new file called *"tidydata.txt"*, using *write.table()*.
 
----
 
 
 ## Instructions to read the tidy data set
 
-Either run the script locally or directly download the tidy data from this repo to get the *"tidydata.csv"* file on your local computer. Load the *"tidydata.txt"* by loading *data.table* package and then use the *read.table()* function, with argument *"stringsAsFactors = FALSE"*, *"header = TRUE"*, *"check.names = FALSE"* and *"sep = """*. To simplify viewing the data frame, use the *dplyr* package and transform the data frame to a tibble using the *tbl_df()* function. One can now print the contents of the data frame to the console or view it with the *View()* function. 
+Either run the script locally or directly download the tidy data from this repo to get the *"tidydata.txt"* file on your local computer. Load the *"tidydata.txt"* by loading *data.table* package and then use the *read.table()* function, with argument *"stringsAsFactors = FALSE"*, *"header = TRUE"*, *"check.names = FALSE"* and *"sep = " ""*. To simplify viewing the data frame, use the *dplyr* package and transform the data frame to a tibble using the *tbl_df()* function. One can now print the contents of the data frame to the console or view it with the *View()* function. 
