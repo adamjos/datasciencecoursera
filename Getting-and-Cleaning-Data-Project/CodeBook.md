@@ -99,28 +99,5 @@ tBodyGyroJerkMean*
 
 In order to produce the tidy data set, a sub set of the variables in the raw data set was used, namely all variables containing "mean" and "std" in the name.
 
-following the steps described below, *"run_analysis.R"* computes the mean of these variables, grouped by both subjects with ID's [1, 30] and activites {WALKING, WALKING_UPSTAIRS, WALKING_DOWNSTAIRS, SITTING, STANDING, LAYING}. The naming of the calculated mean follows the naming of the raw data source, i.e. the mean of "tGravityAcc-mean()-X" is named "tGravityAcc-mean()-X", and in the same way, the mean of "tGravityAcc-std()-X" is named "tGravityAcc-std()-X" etc.
+following the steps described in the README, *"run_analysis.R"* computes the mean of these variables, grouped by both subjects with ID's [1, 30] and activites {WALKING, WALKING_UPSTAIRS, WALKING_DOWNSTAIRS, SITTING, STANDING, LAYING}. The naming of the calculated mean follows the naming of the raw data source, i.e. the mean of "tGravityAcc-mean()-X" is named "tGravityAcc-mean()-X", and in the same way, the mean of "tGravityAcc-std()-X" is named "tGravityAcc-std()-X" etc.
 
-**Steps performed in "run_analysis.R":**
-
-1. Download the *"Human Activity Recognition Using Smartphones Data Set"* from the following url: https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip
-
-2. Unzip the contents of the downloaded package.
-
-3. Load train, test, subject data and meta data (activity and feature names) into separate data frames using *read.table()*.
-
-4. Concatenate the measurements with activities and subjects for both train and test set column-wise with *cbind()*. Concatenate the train and test sets row-wise with *rbind()*.
-
-5. Find the relevant names and their indices in the feature name data frame, i.e. the ones containing either "mean" or "std" by using the *grep()* function. 
-
-6. Extract the relevant variables from the concatenated data frame using the indices found in step 5.
-
-7. Add correct names to the new data frame using the names found in step 5.
-
-8. Exchange the numbers in the activities column of the data frame to proper descriptive names found in the *"activity_lables.txt"* file. This is performed by transforming the data frame to a tibble using *tbl_df()*, and mutating the "activity" column, calling on corresponding activity names in the data frame loaded from *"activity_labels.txt"*.
-
-9. Calculate the mean for each variable for each subject and each activity and store it in a new data frame by grouping the data frame by subjects and activities, and then calling *summarize_all()*, calculating the mean for all variables in all groups.
-
-10. Write the new data frame to a new file called *"tidydata.txt"*, using *write.table()*.
-
----
