@@ -1,6 +1,6 @@
 ## Background
 
-This file explains the steps in the script "run_analysis.R", which gets and cleans the "Human Activity Recognition Using Smartphones Data Set", available at http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones. To give a background into the raw data, following is a citation of the README file written by the authors of the original data set, Jorge L. Reyes-Ortiz, Davide Anguita, Alessandro Ghio, Luca Oneto of Smartlab - Non Linear Complex Systems Laboratory, DITEN - Università degli Studi di Genova, Genoa (I-16145), Italy:
+This file explains the steps in the script *"run_analysis.R"*, which gets and cleans the *"Human Activity Recognition Using Smartphones Data Set"*, available at http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones. To give a background into the raw data, following is a citation of the README file written by the authors of the original data set, Jorge L. Reyes-Ortiz, Davide Anguita, Alessandro Ghio, Luca Oneto of Smartlab - Non Linear Complex Systems Laboratory, DITEN - Università degli Studi di Genova, Genoa (I-16145), Italy:
 
 *"The experiments have been carried out with a group of 30 volunteers within an age bracket of 19-48 years. Each person performed six activities (WALKING, WALKING_UPSTAIRS, WALKING_DOWNSTAIRS, SITTING, STANDING, LAYING) wearing a smartphone (Samsung Galaxy S II) on the waist. Using its embedded accelerometer and gyroscope, we captured 3-axial linear acceleration and 3-axial angular velocity at a constant rate of 50Hz. The experiments have been video-recorded to label the data manually. The obtained dataset has been randomly partitioned into two sets, where 70% of the volunteers was selected for generating the training data and 30% the test data.* 
 
@@ -86,4 +86,4 @@ The requirements for the script was to perform/fulfill the following:
 
 ## Instructions to read the tidy data set
 
-Load the data.table library and then use the read.table function, with "stringsAsFactors = FALSE". To simplify viewing the data frame, use the dplyr package and transform the data frame to a tibble using the tbl_df function. One can now print the contents of the data frame to the console or view it with the View() function. 
+Load the *data.table* library and then use the *read.table()* function, with *"stringsAsFactors = FALSE"*. To simplify viewing the data frame, use the *dplyr* package and transform the data frame to a tibble using the *tbl_df()* function. One can now print the contents of the data frame to the console or view it with the *View()* function. 
