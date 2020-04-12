@@ -73,7 +73,7 @@ dat <- mutate(dat, activity = activitylabels$V2[activity])
 meandat <- dat %>% group_by(subject, activity) %>% summarize_all(mean)
 
 # Write the summarized dataframe to a new file (write.table)
-write.table(meandat, file = "tidydata.csv")
+write.table(meandat, file = "tidydata.txt", row.names = FALSE)
 
 
 
