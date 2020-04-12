@@ -121,6 +121,6 @@ following the steps described below, *"run_analysis.R"* computes the mean of the
 
 9. Calculate the mean for each variable for each subject and each activity and store it in a new data frame by grouping the data frame by subjects and activities, and then calling *summarize_all()*, calculating the mean for all variables in all groups.
 
-10. Write the new data frame to a new file called *"tidydata.csv"*, using *write.table()*.
+10. Write the new data frame to a new file called *"tidydata.txt"*, using *write.table()*.
 
 ---
