@@ -1,6 +1,6 @@
 ## Codebook
 
-This is a description of the variables used from the raw data set as well as a description of the variables in the produced tidy data set. It is also a more detailed description of the steps in the "run_analysis.R" script.
+This is a description of the variables used from the raw data set as well as a description of the variables in the produced tidy data set. It is also a detailed description of the steps in the "run_analysis.R" script.
 
 ### Study design
 This section explains the raw data and how it was obtained, by citing the original authors, Jorge L. Reyes-Ortiz, Davide Anguita, Alessandro Ghio, Luca Oneto of Smartlab - Non Linear Complex Systems Laboratory, DITEN - Università degli Studi di Genova, Genoa (I-16145), Italy:
