@@ -1,6 +1,51 @@
 ## Codebook
 
-This is a description of the variables used in the raw data set as well as a description of the variables in the produced tidy data set.
+This is a description of the variables used from the raw data set as well as a description of the variables in the produced tidy data set. It is also a more detailed description of the steps in the "run_analysis.R" script.
+
+### Study design
+This section explains the raw data and how it was obtained, by citing the original authors, Jorge L. Reyes-Ortiz, Davide Anguita, Alessandro Ghio, Luca Oneto of Smartlab - Non Linear Complex Systems Laboratory, DITEN - Università degli Studi di Genova, Genoa (I-16145), Italy:
+
+*"The experiments have been carried out with a group of 30 volunteers within an age bracket of 19-48 years. Each person performed six activities (WALKING, WALKING_UPSTAIRS, WALKING_DOWNSTAIRS, SITTING, STANDING, LAYING) wearing a smartphone (Samsung Galaxy S II) on the waist. Using its embedded accelerometer and gyroscope, we captured 3-axial linear acceleration and 3-axial angular velocity at a constant rate of 50Hz. The experiments have been video-recorded to label the data manually. The obtained dataset has been randomly partitioned into two sets, where 70% of the volunteers was selected for generating the training data and 30% the test data.* 
+
+*The sensor signals (accelerometer and gyroscope) were pre-processed by applying noise filters and then sampled in fixed-width sliding windows of 2.56 sec and 50% overlap (128 readings/window). The sensor acceleration signal, which has gravitational and body motion components, was separated using a Butterworth low-pass filter into body acceleration and gravity. The gravitational force is assumed to have only low frequency components, therefore a filter with 0.3 Hz cutoff frequency was used. From each window, a vector of features was obtained by calculating variables from the time and frequency domain. See 'features_info.txt' for more details.* 
+
+*For each record it is provided:*
+
+*- Triaxial acceleration from the accelerometer (total acceleration) and the estimated body acceleration.*
+*- Triaxial Angular velocity from the gyroscope.* 
+*- A 561-feature vector with time and frequency domain variables.* 
+*- Its activity label.* 
+*- An identifier of the subject who carried out the experiment.*
+
+*The dataset includes the following files:*
+
+*- 'README.txt'*
+
+*- 'features_info.txt': Shows information about the variables used on the feature vector.*
+
+*- 'features.txt': List of all features.*
+
+*- 'activity_labels.txt': Links the class labels with their activity name.*
+
+*- 'train/X_train.txt': Training set.*
+
+*- 'train/y_train.txt': Training labels.*
+
+*- 'test/X_test.txt': Test set.*
+
+*- 'test/y_test.txt': Test labels.*
+
+*- 'train/subject_train.txt': Each row identifies the subject who performed the activity for each window sample. Its range is from 1 to 30.* 
+
+*Notes:* 
+*- Features are normalized and bounded within [-1,1].*
+*- Each feature vector is a row on the text file.*
+
+*For more information about this dataset contact: activityrecognition@smartlab.ws"*
+
+---
+
+### Code book
 
 Following is a quotation of the original authors, Jorge L. Reyes-Ortiz, Davide Anguita, Alessandro Ghio and Luca Oneto, regarding the description of the raw data variables:
 
@@ -54,4 +99,28 @@ tBodyGyroJerkMean*
 
 In order to produce the tidy data set, a sub set of the variables in the raw data set was used, i.e. all variables containing "mean" and "std" in the name.
 
-following the steps described in the README, *"run_analysis.R"* computes the mean of these variables, grouped by both subjects with ID's [1, 30] and activites {WALKING, WALKING_UPSTAIRS, WALKING_DOWNSTAIRS, SITTING, STANDING, LAYING}. The naming of the calculated mean follows the naming of the raw data source, i.e. the mean of tGravityAcc-mean()-X is named the same, as well as the mean of tGravityAcc-std()-X is named the same etc.
+following the steps described below, *"run_analysis.R"* computes the mean of these variables, grouped by both subjects with ID's [1, 30] and activites {WALKING, WALKING_UPSTAIRS, WALKING_DOWNSTAIRS, SITTING, STANDING, LAYING}. The naming of the calculated mean follows the naming of the raw data source, i.e. the mean of tGravityAcc-mean()-X is named the same, as well as the mean of tGravityAcc-std()-X is named the same etc.
+
+**Steps performed in "run_analysis.R":**
+
+1. Download the *"Human Activity Recognition Using Smartphones Data Set"* from the following url: https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip
+
+2. Unzip the contents of the downloaded package.
+
+3. Load train, test, subject data and meta data (activity and feature names) into separate data frames using *read.table()*.
+
+4. Concatenate the measurements with activities and subjects for both train and test set column-wise with *cbind()*. Concatenate the train and test sets row-wise with *rbind()*.
+
+5. Find the relevant names and their indices in the feature name data frame, i.e. the ones containing either "mean" or "std" by using the *grep()* function. 
+
+6. Extract the relevant variables from the concatenated data frame using the indices found in step 5.
+
+7. Add correct names to the new data frame using the names found in step 5.
+
+8. Exchange the numbers in the activities column of the data frame to proper descriptive names found in the *"activity_lables.txt"* file. This is performed by transforming the data frame to a tibble using *tbl_df()*, and mutating the "activity" column, calling on corresponding activity names in the data frame loaded from *"activity_labels.txt"*.
+
+9. Calculate the mean for each variable for each subject and each activity and store it in a new data frame by grouping the data frame by subjects and activities, and then calling *summarize_all()*, calculating the mean for all variables in all groups.
+
+10. Write the new data frame to a new file called *"tidydata.csv"*, using *write.table()*.
+
+---
