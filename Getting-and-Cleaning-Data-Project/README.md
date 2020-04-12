@@ -32,7 +32,6 @@ The requirements for the script was to perform/fulfill the following:
 
 10. Write the new data frame to a new file called *"tidydata.txt"*, using *write.table()*.
 
----
 
 
 ## Instructions to read the tidy data set
