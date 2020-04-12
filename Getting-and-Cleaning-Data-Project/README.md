@@ -1,4 +1,4 @@
-## Background
+## README
 
 This repo contains a script called *"run_analysis.R"*, which gets and cleans the *"Human Activity Recognition Using Smartphones Data Set"*, available at http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones. The script produces a tidy data set called *"tidydata.csv"* which contains summarized values from the raw data set. More information about the raw data set, the script and the produced tidy data set, can be found in the Code book.
 
