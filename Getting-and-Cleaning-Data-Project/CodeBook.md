@@ -45,7 +45,7 @@ This section explains the raw data and how it was obtained, by citing the origin
 
 ---
 
-### Code book
+### Variable description
 
 Following is a quotation of the original authors, Jorge L. Reyes-Ortiz, Davide Anguita, Alessandro Ghio and Luca Oneto, regarding the description of the raw data variables:
 
