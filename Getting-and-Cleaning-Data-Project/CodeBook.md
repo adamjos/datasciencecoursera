@@ -97,7 +97,7 @@ tBodyGyroJerkMean*
 
 ---
 
-In order to produce the tidy data set, a sub set of the variables in the raw data set was used, i.e. all variables containing "mean" and "std" in the name.
+In order to produce the tidy data set, a sub set of the variables in the raw data set was used, namely all variables containing "mean" and "std" in the name, as per the course assignment.
 
 following the steps described below, *"run_analysis.R"* computes the mean of these variables, grouped by both subjects with ID's [1, 30] and activites {WALKING, WALKING_UPSTAIRS, WALKING_DOWNSTAIRS, SITTING, STANDING, LAYING}. The naming of the calculated mean follows the naming of the raw data source, i.e. the mean of tGravityAcc-mean()-X is named the same, as well as the mean of tGravityAcc-std()-X is named the same etc.
 
