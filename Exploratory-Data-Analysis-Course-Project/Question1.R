@@ -6,9 +6,9 @@
 #
 
 # Get data
-#dataurl <- "https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2FNEI_data.zip"
-#download.file(dataurl, "data.zip")
-#unzip("data.zip")
+dataurl <- "https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2FNEI_data.zip"
+download.file(dataurl, "data.zip")
+unzip("data.zip")
 
 # Load data
 NEI <- readRDS("summarySCC_PM25.rds")
