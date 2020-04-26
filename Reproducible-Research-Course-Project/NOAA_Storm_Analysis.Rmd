@@ -1,0 +1,176 @@
+---
+title: "Identification of most severe weather events with respect to population health and economic cost based on observations from the NOAA database"
+author: "Adam"
+date: '2020-04-24'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Review criteria
+
+1. Has either a (1) valid RPubs URL pointing to a data analysis document for this assignment been submitted; or (2) a complete PDF file presenting the data analysis been uploaded?
+
+2. Is the document written in English?
+
+3. Does the analysis include description and justification for any data transformations?
+
+4. Does the document have a title that briefly summarizes the data analysis?
+
+5. Does the document have a synopsis that describes and summarizes the data analysis in less than 10 sentences?
+
+6. Is there a section titled "Data Processing" that describes how the data were loaded into R and processed for analysis?
+
+7. Is there a section titled "Results" where the main results are presented?
+
+8. Is there at least one figure in the document that contains a plot?
+
+9. Are there at most 3 figures in this document?
+
+10. Does the analysis start from the raw data file (i.e. the original .csv.bz2 file)?
+
+11. Does the analysis address the question of which types of events are most harmful to population health?
+
+12. Does the analysis address the question of which types of events have the greatest economic consequences?
+
+13. Do all the results of the analysis (i.e. figures, tables, numerical summaries) appear to be reproducible?
+
+14. Do the figure(s) have descriptive captions (i.e. there is a description near the figure of what is happening in the figure)?
+
+15. As far as you can determine, does it appear that the work submitted for this project is the work of the student who submitted it?
+
+
+
+
+
+## Synopsis
+
+Analysis aiming to target the two following questions:
+
+Q1: Which weather event is most harmful to population health?
+
+Q2: Which weather event have the greatest economic consequences?
+
+To summarize, it was found that XXX was the most harmful event for population health, with a mean death rate per event of XXX. (Should one count total deaths over time instead?) How to handle fatalities vs injuries?
+
+It was found that YYY was the event with the greatest economic consequences, with a mean cost per event of YYY. (Should one count the total cost over time instead?) 
+
+In the following link, the National Weather Service Storm Data Documentation can be found, describing the dataset and it's variables.
+
+https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf
+
+In the next link, a FAQ from the National Climatic Data Center Storm Events can be found for the dataset.
+
+https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2FNCDC%20Storm%20Events-FAQ%20Page.pdf
+
+---
+
+## Data processing
+
+Mention what steps is done in this section and present the code below for doing so.
+
+Start by loading the required packages, then if the data is not present on the local machine, download and load it. 
+
+```{r}
+## Load required packages
+library(data.table)
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+
+## Get data
+if(!file.exists("repdata_data_StormData.csv.bz2")) {
+  dataurl <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2"
+  download.file(dataurl, "repdata_data_StormData.csv.bz2")
+}
+
+## Load data
+dat <- tbl_df(fread("repdata_data_StormData.csv.bz2"))
+
+## Pre-process data
+
+# Transform date column to date object
+dat <- mutate(dat, DATE =  mdy_hms(BGN_DATE))
+
+# Filter out data from 1996 and forward were all weather events are tracked
+dat <- filter(dat, DATE >= "1996-01-01")
+
+# Mutate new column which is sum of fatalities and injuries
+
+# Mutate new column which is the sum of property and crop damage
+
+# Remove event with zero values
+harmdat <- filter(dat, (FATALITIES != 0) | (INJURIES != 0))
+
+```
+
+---
+
+## Results
+
+Present the two subsections targeting one question each, starting with Q1.
+
+### Analysis for Q1
+
+Mention method and present code to perform it. 
+
+In order to answer the first question regarding which weather event that is most harmful for the population, the data is grouped by weather event and then both total fatalities and total injuries over time are calculated. One could also argue that one should look at the mean fatalities and injuries per event as that would tell how deadly or harmful one individual event would be on average. However now we take the perspective of which event has caused the most harm to the population over time, i.e. very deadly but rare events are not considered as more harmful than a common low to medium deadly event which is causing a lot of harm over time.
+
+```{r}
+
+## Analytic code
+# Calculate total fatalities and total injuries per weather event
+totdat <- dat %>% group_by(EVTYPE) %>% summarize(total_fatalities = sum(FATALITIES), total_injuries = sum(INJURIES))
+
+# Print the top 10 weather events ranked by total fatalities 
+totdat %>% arrange(desc(total_fatalities), desc(total_injuries)) %>% top_n(n = 10, wt = total_fatalities)
+
+```
+
+Comment on result from analysis.
+
+One can see that tornadoes is significantlly more deadly and is causing more injuries than any other weather event. In order to visualize this, figure [ref] is showing total fatalities versus total injuries per weather event.
+
+Present figure and code for plotting.
+
+```{r}
+
+## Plot
+
+```
+
+Comment on figure.
+
+One can observe more clearly the magnitude of the difference between harmfulness in events, where tornadoes far exceeds the other weather types.
+
+### Analysis for Q2
+
+Mention method and present code to perform it. 
+
+```{r}
+
+## Analytic code
+
+```
+
+Comment on result from analysis.
+
+Present figure and code for plotting.
+
+```{r}
+
+## Plot
+
+```
+
+Comment on figure.
+
+---
+
+## Discussion and conclusion
+
+Discussion of analysis and results.
+
+Summarize and conclude.
