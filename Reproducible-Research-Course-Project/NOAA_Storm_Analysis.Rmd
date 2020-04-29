@@ -47,7 +47,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Synopsis
 
-Analysis aiming to target the two following questions:
+Analysis of weather event obserations from the NOAA Storm Database, aiming to answer the two following questions:
 
 Q1: Which weather event is most harmful to population health?
 
@@ -57,13 +57,17 @@ To summarize, it was found that XXX was the most harmful event for population he
 
 It was found that YYY was the event with the greatest economic consequences, with a mean cost per event of YYY. (Should one count the total cost over time instead?) 
 
+Link to download the dataset 
+
+[Storm Data (47MB)](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2)
+
 In the following link, the National Weather Service Storm Data Documentation can be found, describing the dataset and it's variables.
 
-https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf
+[National Weather Service Storm Data Documentation](https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf)
 
 In the next link, a FAQ from the National Climatic Data Center Storm Events can be found for the dataset.
 
-https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2FNCDC%20Storm%20Events-FAQ%20Page.pdf
+[National Climatic Data Center Storm Events FAQ](https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2FNCDC%20Storm%20Events-FAQ%20Page.pdf)
 
 ---
 
@@ -73,7 +77,7 @@ Mention what steps is done in this section and present the code below for doing 
 
 Start by loading the required packages, then if the data is not present on the local machine, download and load it. 
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 ## Load required packages
 library(data.table)
 library(dplyr)
@@ -89,22 +93,75 @@ if(!file.exists("repdata_data_StormData.csv.bz2")) {
 ## Load data
 dat <- tbl_df(fread("repdata_data_StormData.csv.bz2"))
 
+```
+
+After the data has been loaded, perform pre-processing by creating a new column of datetime objects from the BGN_DATE column. As a first step, let's explore the different types of event that are tracked over time. On the NOAA website it is mentioned ([link](https://www.ncdc.noaa.gov/stormevents/details.jsp)) that all types of events are tracked from 1996 and forward. Let's see for ourselves.
+
+```{r}
 ## Pre-process data
 
 # Transform date column to date object
 dat <- mutate(dat, DATE =  mdy_hms(BGN_DATE))
 
-# Filter out data from 1996 and forward were all weather events are tracked
-dat <- filter(dat, DATE >= "1996-01-01")
+# Let's now check how many different events that are being tracked after 1996
+amount96 <- length(unique(filter(dat, DATE >= "1996-01-01")$EVTYPE))
+print(paste0("Number of unique weather events from 1993 and forward: ", amount96))
 
-# Mutate new column which is sum of fatalities and injuries
-
-# Mutate new column which is the sum of property and crop damage
-
-# Remove event with zero values
-harmdat <- filter(dat, (FATALITIES != 0) | (INJURIES != 0))
 
 ```
+
+From these results we can see that as much as `r amount96` unique types are being recorded from 1996 and forward. This seems to be a bit high. By inspecting the data, one can see that from 1993 there are a lot of different variants of recording the same type of event. In the documentation it is mentioned that the true number of unique types is infact 48. In order to extract the data of interest, the dataset is first filtered on dates from 1996 and forward. Filtering is then performed so that only observations with correct weather event label are used.
+
+
+```{r}
+
+dat <- filter(dat, DATE >= "1996-01-01")
+
+# Offical weather events from NOAA database documentaion
+evtypes <- c("Astronomical Low Tide", "Avalanche", "Blizzard", "Coastal Flood",
+            "Cold/Wind Chill", "Debris Flow", "Dense Fog", "Dense Smoke", 
+            "Drought", "Dust Devil", "Dust Storm", "Excessive Heat",
+            "Extreme Cold/Wind Chill", "Flash Flood", "Flood", "Frost/Freeze",
+            "Funnel Cloud", "Freezing Fog", "Hail", "Heat",
+            "Heavy Rain", "Heavy Snow", "High Surf", "High Wind",
+            "Typhoon",  "Ice Storm", "Lake-Effect Snow", "Lakeshore Flood",
+            "Lightning", "Marine Hail", "Marine High Wind", "Marine Strong Wind",
+            "Marine Thunderstorm Wind", "Rip Current", "Seiche", "Sleet",
+            "Storm Surge/Tide", "Strong Wind", "Thunderstorm Wind", "Tornado", 
+            "Tropical Depression", "Tropical Storm", "Tsunami", "Volcanic Ash", 
+            "Waterspout", "Wildfire", "Winter Storm", "Winter Weather")
+
+dat <- filter(dat, EVTYPE %in% toupper(evtypes))
+
+```
+
+Filtering is then performed to create two new subsets of the data to be used for the two questions respectively. The first subset is called *harmdat*, containing information about the harmfulness of events, and is created by filtering out all events which have either non-zero fatalities or non-zero injuries.
+
+```{r}
+
+
+# Filter out data with events which have non-zero recorded values for fatalities or injuries
+harmdat <- filter(dat, (FATALITIES != 0) | (INJURIES != 0))
+
+
+```
+
+The second subset of the data is called *econdat*, and contains all events with non-zero recorded values for property or crop damage. To enable us to take this subset, we must first create a new column merging the information in the PROPDMG and CROPDMG variables with the PROPDMGEXP and CROPDMGEXP variables, respectively.
+
+```{r}
+
+# Create vector with multiper values for each present symbol in EXP variables in the filtered dataset
+multipliers <- c("0"=10, "K"=1e3, "M"=1e6, "B"=1e9)
+
+# Create column in which information in propdmg and propdmgexp is combined
+econdat <- mutate(dat, ACTPROPDMG = if_else(PROPDMGEXP != "", PROPDMG * multipliers[PROPDMGEXP], 0))
+
+# Create column in which information in cropdmg and cropdmgexp is combined
+econdat <- mutate(econdat, ACTCROPDMG = if_else(CROPDMGEXP != "", CROPDMG * multipliers[CROPDMGEXP], 0))
+
+```
+
+The data is now ready for analysis! 
 
 ---
 
@@ -122,10 +179,10 @@ In order to answer the first question regarding which weather event that is most
 
 ## Analytic code
 # Calculate total fatalities and total injuries per weather event
-totdat <- dat %>% group_by(EVTYPE) %>% summarize(total_fatalities = sum(FATALITIES), total_injuries = sum(INJURIES))
+totharmdat <- harmdat %>% group_by(EVTYPE) %>% summarize(total_fatalities = sum(FATALITIES), total_injuries = sum(INJURIES))
 
 # Print the top 10 weather events ranked by total fatalities 
-totdat %>% arrange(desc(total_fatalities), desc(total_injuries)) %>% top_n(n = 10, wt = total_fatalities)
+totharmdat %>% arrange(desc(total_fatalities), desc(total_injuries)) %>% top_n(n = 10, wt = total_fatalities)
 
 ```
 
@@ -152,6 +209,11 @@ Mention method and present code to perform it.
 ```{r}
 
 ## Analytic code
+# Calculate total property damage and total crop damage per weather event
+totecondat <- econdat %>% group_by(EVTYPE) %>% summarize(total_propdmg = sum(ACTPROPDMG), total_cropdmg = sum(ACTCROPDMG))
+
+# Print the top 10 weather events ranked by total fatalities 
+totecondat %>% arrange(desc(total_propdmg), desc(total_cropdmg)) %>% top_n(n = 10, wt = total_propdmg)
 
 ```
 
