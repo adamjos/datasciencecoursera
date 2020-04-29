@@ -153,11 +153,13 @@ The second subset of the data is called *econdat*, and contains all events with 
 # Create vector with multiper values for each present symbol in EXP variables in the filtered dataset
 multipliers <- c("0"=10, "K"=1e3, "M"=1e6, "B"=1e9)
 
-# Create column in which information in propdmg and propdmgexp is combined
+# Create column in which information from propdmg and propdmgexp is combined
 econdat <- mutate(dat, ACTPROPDMG = if_else(PROPDMGEXP != "", PROPDMG * multipliers[PROPDMGEXP], 0))
 
-# Create column in which information in cropdmg and cropdmgexp is combined
+# Create column in which information from cropdmg and cropdmgexp is combined
 econdat <- mutate(econdat, ACTCROPDMG = if_else(CROPDMGEXP != "", CROPDMG * multipliers[CROPDMGEXP], 0))
+
+econdat <- filter(econdat, (ACTPROPDMG != 0 | ACTCROPDMG != 0))
 
 ```
 
@@ -181,7 +183,7 @@ In order to answer the first question regarding which weather event that is most
 # Calculate total fatalities and total injuries per weather event
 totharmdat <- harmdat %>% group_by(EVTYPE) %>% summarize(total_fatalities = sum(FATALITIES), total_injuries = sum(INJURIES))
 
-# Print the top 10 weather events ranked by total fatalities 
+# Print the top 10 weather events ranked by total property damage 
 totharmdat %>% arrange(desc(total_fatalities), desc(total_injuries)) %>% top_n(n = 10, wt = total_fatalities)
 
 ```
