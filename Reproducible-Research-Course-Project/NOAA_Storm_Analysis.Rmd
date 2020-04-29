@@ -146,7 +146,7 @@ harmdat <- filter(dat, (FATALITIES != 0) | (INJURIES != 0))
 
 ```
 
-The second subset of the data is called *econdat*, and contains all events with non-zero recorded values for property or crop damage. To enable us to take this subset, we must first create a new column merging the information in the PROPDMG and CROPDMG variables with the PROPDMGEXP and CROPDMGEXP variables, respectively.
+The second subset of the data is called *econdat*, and contains all events with non-zero recorded values for property or crop damage. To enable us to take this subset, we must first create a new column merging the information in the PROPDMG and CROPDMG variables with the PROPDMGEXP and CROPDMGEXP variables, respectively. The dataset is then filtered observations which have either non-zero property damages or non-zero crop damages. 
 
 ```{r}
 
@@ -159,6 +159,7 @@ econdat <- mutate(dat, ACTPROPDMG = if_else(PROPDMGEXP != "", PROPDMG * multipli
 # Create column in which information from cropdmg and cropdmgexp is combined
 econdat <- mutate(econdat, ACTCROPDMG = if_else(CROPDMGEXP != "", CROPDMG * multipliers[CROPDMGEXP], 0))
 
+# Filter out observations which have either non-zero property damages or non-zero crop damages 
 econdat <- filter(econdat, (ACTPROPDMG != 0 | ACTCROPDMG != 0))
 
 ```
