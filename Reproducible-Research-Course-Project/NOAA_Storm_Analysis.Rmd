@@ -187,7 +187,7 @@ totecondat %>% arrange(desc(total_propdmg), desc(total_cropdmg)) %>% top_n(n = 1
 
 ```
 
-From these results one can observe that floods have a value of total property damages with a magnitude higher than the second highest, tornado. Let's observe these results in plot, where we get a clearer view of the extent of crop damages as well. This can be seen in Figure 2.
+From these results one can observe that floods have a value of total property damages with a magnitude higher than the second highest, tornado. Let's observe these results in a plot, where we get a clearer view of the extent of crop damages as well. This can be seen in Figure 2.
 
 ```{r, fig.width=10, fig.height=6, dpi=300}
 
@@ -214,10 +214,13 @@ top10econdat %>%
 
 ```
 
-One can again see that floods vastly outnumber any other weather event in terms of economic consequences. An potential explanation for this can be found in the documentation, where it is mentioned that floods is the only event where the reporter is *required* to enter monetary damages even if it is a "guesstimate". This could obviously skew the data. Another observation one can make in the plot is that the event which is causing the highest crop damage is drought which is to expected.
+One can again see that floods vastly outnumber any other weather event in terms of economic consequences. A potential explanation for this can be found in the documentation, where it is mentioned that floods is the only event where the reporter is *required* to enter monetary damages even if it is a "guesstimate". This could obviously skew the data. Another observation one can make in the plot is that the event which is causing the highest crop damage is drought, which could be expected.
 
 ---
 
 ## Discussion and conclusion
 
-We can now conclude the analysis and answer the questions. The answer to **question 1**, which event is most harmful to the population, is clearly **tornadoes** with over 20000 affected persons between 1996 and 2011. The answer to **question 2**, which event has greatest economic consequneces, is by a great margin **floods**. It could however be argued that this result is partly skewed due to mandatory filling in of monetary damages for floods even if they are inaccurate. In other events where the monetary damage is unclear, the value might be left blank in the report. 
+We can now conclude the analysis and answer the questions. The answer to **question 1**, which event is most harmful to the population, is clearly **tornadoes** with over 20000 affected persons between 1996 and 2011. The answer to **question 2**, which event has greatest economic consequneces, is by a great margin **floods**. It could however be argued that this result is partly skewed due to mandatory filling in of monetary damages for floods even if they are inaccurate. For other events where the monetary damage is unclear, the value might be left blank in the report, further skewing the data. 
+
+
+---
