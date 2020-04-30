@@ -23,9 +23,6 @@ Link to download the dataset:
 Documentation for the dataset:
 [National Weather Service Storm Data Documentation](https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf)
 
-FAQ about dataset:
-[National Climatic Data Center Storm Events FAQ](https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2FNCDC%20Storm%20Events-FAQ%20Page.pdf)
-
 In this study the data is pre-processed, subsetted and then analysed, where total fatalities, total injuries, total property damage and total crop damage per weather event is calculated over the time period of January 1996 to November 2011 and plotted in two separate figures. Figure 1 tries to answer question 1 and includes information about total fatalities and total injuries per weather event. Figure 2 tries to answer question 2 and includes information about total property damages and total crop damages per weather event. The analysis is then concluded with a brief discussion.    
 
 ---
