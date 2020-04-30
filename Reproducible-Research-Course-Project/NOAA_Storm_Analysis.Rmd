@@ -13,9 +13,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 The following study is an analysis of weather event obserations in US from the NOAA Storm Database, aiming to answer the two following questions:
 
-**Q1: Which weather event is most harmful to population health?**
+**Q1: Across the United States, which types of weather events are most harmful with respect to population health?**
 
-**Q2: Which weather event have the greatest economic consequences?**
+**Q2: Across the United States, which types of weather events have the greatest economic consequences?**
 
 Link to download the dataset: 
 [Storm Data (47MB)](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2)
@@ -23,7 +23,7 @@ Link to download the dataset:
 Documentation for the dataset:
 [National Weather Service Storm Data Documentation](https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf)
 
-In this study the data is pre-processed, subsetted and then analysed, where total fatalities, total injuries, total property damage and total crop damage per weather event is calculated over the time period of January 1996 to November 2011 and plotted in two separate figures. Figure 1 tries to answer question 1 and includes information about total fatalities and total injuries per weather event. Figure 2 tries to answer question 2 and includes information about total property damages and total crop damages per weather event. The analysis is then concluded with a brief discussion.    
+In this study the data is pre-processed, subsetted and then analysed, where total fatalities, total injuries, total property damage and total crop damage per weather event is calculated over the time period of January 1996 to November 2011 and plotted in two separate figures. Figure 1 tries to answer question 1 and includes information about total fatalities and total injuries per weather event, where tornadoes can be seen to be the most harmful to the population. Figure 2 tries to answer question 2 and includes information about total property damages and total crop damages per weather event, where floods can be seen to have the highest economic consequences. The analysis is concluded with a brief discussion.    
 
 ---
 
@@ -217,7 +217,7 @@ One can again see that floods vastly outnumber any other weather event in terms 
 
 ## Discussion and conclusion
 
-We can now conclude the analysis and answer the questions. The answer to **question 1**, which event is most harmful to the population, is clearly **tornadoes** with over 20000 affected persons between 1996 and 2011. The answer to **question 2**, which event has greatest economic consequneces, is by a great margin **floods**. It could however be argued that this result is partly skewed due to mandatory filling in of monetary damages for floods even if they are inaccurate. For other events where the monetary damage is unclear, the value might be left blank in the report, further skewing the data. 
+We can now conclude the analysis and answer the questions. The answer to **question 1**, which event is most harmful to the population, is clearly **tornadoes** with over 20000 affected persons between 1996 and 2011. The answer to **question 2**, which event has greatest economic consequneces, is by a great margin **floods** with economic consequences of almost 150 billion USD. It could however be argued that this result is partly skewed due to mandatory filling in of monetary damages for floods even if they are inaccurate. For other events where the monetary damage is unclear, the value might be left blank in the report, further skewing the data. 
 
 
 ---
