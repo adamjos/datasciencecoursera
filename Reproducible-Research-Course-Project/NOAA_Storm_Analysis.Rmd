@@ -1,7 +1,7 @@
 ---
-title: "Identification of most severe weather events with respect to population health and economic cost based on observations from the NOAA database"
-author: "Adam"
-date: '2020-04-24'
+title: "Consequence analysis of weather events in US with respect to population health and economic cost based on observations from the NOAA database"
+author: "Adam Josefsson"
+date: '2020-04-30'
 output: html_document
 ---
 
@@ -9,71 +9,28 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-### Review criteria
-
-1. Has either a (1) valid RPubs URL pointing to a data analysis document for this assignment been submitted; or (2) a complete PDF file presenting the data analysis been uploaded?
-
-2. Is the document written in English?
-
-3. Does the analysis include description and justification for any data transformations?
-
-4. Does the document have a title that briefly summarizes the data analysis?
-
-5. Does the document have a synopsis that describes and summarizes the data analysis in less than 10 sentences?
-
-6. Is there a section titled "Data Processing" that describes how the data were loaded into R and processed for analysis?
-
-7. Is there a section titled "Results" where the main results are presented?
-
-8. Is there at least one figure in the document that contains a plot?
-
-9. Are there at most 3 figures in this document?
-
-10. Does the analysis start from the raw data file (i.e. the original .csv.bz2 file)?
-
-11. Does the analysis address the question of which types of events are most harmful to population health?
-
-12. Does the analysis address the question of which types of events have the greatest economic consequences?
-
-13. Do all the results of the analysis (i.e. figures, tables, numerical summaries) appear to be reproducible?
-
-14. Do the figure(s) have descriptive captions (i.e. there is a description near the figure of what is happening in the figure)?
-
-15. As far as you can determine, does it appear that the work submitted for this project is the work of the student who submitted it?
-
-
-
-
-
 ## Synopsis
 
-Analysis of weather event obserations from the NOAA Storm Database, aiming to answer the two following questions:
+The following study is an analysis of weather event obserations in US from the NOAA Storm Database, aiming to answer the two following questions:
 
-Q1: Which weather event is most harmful to population health?
+**Q1: Which weather event is most harmful to population health?**
 
-Q2: Which weather event have the greatest economic consequences?
+**Q2: Which weather event have the greatest economic consequences?**
 
-To summarize, it was found that XXX was the most harmful event for population health, with a mean death rate per event of XXX. (Should one count total deaths over time instead?) How to handle fatalities vs injuries?
-
-It was found that YYY was the event with the greatest economic consequences, with a mean cost per event of YYY. (Should one count the total cost over time instead?) 
-
-Link to download the dataset 
-
+Link to download the dataset: 
 [Storm Data (47MB)](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2)
 
-In the following link, the National Weather Service Storm Data Documentation can be found, describing the dataset and it's variables.
-
+Documentation for the dataset:
 [National Weather Service Storm Data Documentation](https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf)
 
-In the next link, a FAQ from the National Climatic Data Center Storm Events can be found for the dataset.
-
+FAQ about dataset:
 [National Climatic Data Center Storm Events FAQ](https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2FNCDC%20Storm%20Events-FAQ%20Page.pdf)
+
+In this study the data is pre-processed, subsetted and then analysed, where total fatalities, total injuries, total property damage and total crop damage per weather event is calculated over the time period of January 1996 to November 2011 and plotted in two separate figures. Figure 1 tries to answer question 1 and includes information about total fatalities and total injuries per weather event. Figure 2 tries to answer question 2 and includes information about total property damages and total crop damages per weather event. The analysis is then concluded with a brief discussion.    
 
 ---
 
 ## Data processing
-
-Mention what steps is done in this section and present the code below for doing so.
 
 Start by loading the required packages, then if the data is not present on the local machine, download and load it. 
 
@@ -81,6 +38,7 @@ Start by loading the required packages, then if the data is not present on the l
 ## Load required packages
 library(data.table)
 library(dplyr)
+library(tidyr)
 library(ggplot2)
 library(lubridate)
 
@@ -95,18 +53,16 @@ dat <- tbl_df(fread("repdata_data_StormData.csv.bz2"))
 
 ```
 
-After the data has been loaded, perform pre-processing by creating a new column of datetime objects from the BGN_DATE column. As a first step, let's explore the different types of event that are tracked over time. On the NOAA website it is mentioned ([link](https://www.ncdc.noaa.gov/stormevents/details.jsp)) that all types of events are tracked from 1996 and forward. Let's see for ourselves.
+After the data has been loaded, perform pre-processing by creating a new column of datetime objects from the BGN_DATE column. As a second step, let's explore the different types of event that are tracked over time. On the NOAA website it is mentioned ([link](https://www.ncdc.noaa.gov/stormevents/details.jsp)) that all types of events are tracked from 1996 and forward. Let's see for ourselves.
 
 ```{r}
-## Pre-process data
 
 # Transform date column to date object
 dat <- mutate(dat, DATE =  mdy_hms(BGN_DATE))
 
 # Let's now check how many different events that are being tracked after 1996
 amount96 <- length(unique(filter(dat, DATE >= "1996-01-01")$EVTYPE))
-print(paste0("Number of unique weather events from 1993 and forward: ", amount96))
-
+print(paste0("Number of unique weather events from 1996 and forward: ", amount96))
 
 ```
 
@@ -146,7 +102,7 @@ harmdat <- filter(dat, (FATALITIES != 0) | (INJURIES != 0))
 
 ```
 
-The second subset of the data is called *econdat*, and contains all events with non-zero recorded values for property or crop damage. To enable us to take this subset, we must first create a new column merging the information in the PROPDMG and CROPDMG variables with the PROPDMGEXP and CROPDMGEXP variables, respectively. The dataset is then filtered observations which have either non-zero property damages or non-zero crop damages. 
+The second subset of the data is called *econdat*, and contains all events with non-zero recorded values for property or crop damage. To enable us to take this subset, we must first create a new column merging the information in the PROPDMG and CROPDMG variables with the PROPDMGEXP and CROPDMGEXP variables, respectively. The dataset is then filtered on observations which have either non-zero property damages or non-zero crop damages. 
 
 ```{r}
 
@@ -170,72 +126,98 @@ The data is now ready for analysis!
 
 ## Results
 
-Present the two subsections targeting one question each, starting with Q1.
+In this section we perform the analysis for the two questions and present the results, with one subsection per question. The first subsection tries to present result to answer question 1, which event is most harmhul to the population, and the second subsection tries to present result to answer question 2, which event is causing the most economic damage.  
 
 ### Analysis for Q1
 
-Mention method and present code to perform it. 
-
-In order to answer the first question regarding which weather event that is most harmful for the population, the data is grouped by weather event and then both total fatalities and total injuries over time are calculated. One could also argue that one should look at the mean fatalities and injuries per event as that would tell how deadly or harmful one individual event would be on average. However now we take the perspective of which event has caused the most harm to the population over time, i.e. very deadly but rare events are not considered as more harmful than a common low to medium deadly event which is causing a lot of harm over time.
+In order to answer the first question regarding which weather event that is most harmful for the population, the data is grouped by weather event and then both total fatalities and total injuries over time are calculated, using the pre-processed dataset *harmdat*. One could also argue that one should look at the mean fatalities and injuries per event as that would tell how deadly or harmful one individual event would be on average. However now we take the perspective of which event has caused the most harm to the population over time, i.e. very deadly but rare events are not considered as more harmful compared to an event which is common with a low-to-medium deadliness which is causing a lot of harm over time.
 
 ```{r}
 
-## Analytic code
 # Calculate total fatalities and total injuries per weather event
 totharmdat <- harmdat %>% group_by(EVTYPE) %>% summarize(total_fatalities = sum(FATALITIES), total_injuries = sum(INJURIES))
 
-# Print the top 10 weather events ranked by total property damage 
-totharmdat %>% arrange(desc(total_fatalities), desc(total_injuries)) %>% top_n(n = 10, wt = total_fatalities)
+# Print the top 10 weather events ranked by total fatalities
+totharmdat %>% arrange(desc(total_fatalities)) %>% top_n(n = 10, wt = total_fatalities)
 
 ```
 
-Comment on result from analysis.
+From these result one can see that when ranking the weather events by only total fatalities, excessive heat is ranked to be the most harmful. However one can observe that tornadoes, which is ranked number two in deadliness, has relatively high amount of caused injuries. In order to get a more clear view of how much harm a specific event is causing the population, total fatalities and total injuries are summed together and the top ten most harmful events are filtered out and plotted in Figure 1.
 
-One can see that tornadoes is significantlly more deadly and is causing more injuries than any other weather event. In order to visualize this, figure [ref] is showing total fatalities versus total injuries per weather event.
+```{r, fig.width=10, fig.height=6, dpi=300}
 
-Present figure and code for plotting.
+# Calcultate total harm, filter out the top ten most harmful events and transform the dataset to long format (this will simplify plotting)
+top10harmdat <- totharmdat %>% 
+                group_by(EVTYPE) %>%
+                mutate(total_harm = total_fatalities + total_injuries) %>%
+                arrange(desc(total_harm)) %>%
+                .[1:10,] %>%
+                pivot_longer(c(-EVTYPE,-total_harm))
 
-```{r}
+# Plot
+top10harmdat %>% 
+                ggplot(aes(x = reorder(EVTYPE, total_harm), y = value, fill = name)) + 
+                geom_bar(stat = "identity") + 
+                labs(x = "Weather event", y = "Count") +
+                labs(title = "Harm Caused to Population by Weather Events in US 1996-2011") +
+                labs(subtitle = "Number of affected persons and outcome") +
+                labs(caption = "Figure 1: The ten weather event which has caused the most harm to the population of US \nin terms of number of affected persons and outcome, between January 1996 and November 2011.") +
+                theme(plot.caption = element_text(hjust = 0.5, vjust = -1)) +
+                theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+                theme(plot.margin = unit(c(1,0,1,0.2),"cm")) + 
+                scale_fill_discrete(name = "Outcomes", labels = c("Fatalities", "Injuries"))
+                
 
-## Plot
 
 ```
 
-Comment on figure.
-
-One can observe more clearly the magnitude of the difference between harmfulness in events, where tornadoes far exceeds the other weather types.
+One can observe more clearly the magnitude of the difference between harmfulness in events, where tornadoes far exceeds the other weather types. Even though excessive heat have caused sligthly more fatalities, the number of injuries caused by tornadoes is a factor of three larger than the injuries caused by excesive heat. 
 
 ### Analysis for Q2
 
-Mention method and present code to perform it. 
+In this section we perform analysis and present results to answer the second question, which weather event has most severe economic consequences. In order to perform the analysis, we start from the pre-processed data *econdat*. As a first step in the analysis we group the data per weather event and calculate the total property damages and total crop damages and print out the top ten weather events ranked by total property damages. 
 
 ```{r}
 
-## Analytic code
 # Calculate total property damage and total crop damage per weather event
 totecondat <- econdat %>% group_by(EVTYPE) %>% summarize(total_propdmg = sum(ACTPROPDMG), total_cropdmg = sum(ACTCROPDMG))
 
-# Print the top 10 weather events ranked by total fatalities 
+# Print the top 10 weather events ranked by total property damage 
 totecondat %>% arrange(desc(total_propdmg), desc(total_cropdmg)) %>% top_n(n = 10, wt = total_propdmg)
 
 ```
 
-Comment on result from analysis.
+From these results one can observe that floods have a value of total property damages with a magnitude higher than the second highest, tornado. Let's observe these results in plot, where we get a clearer view of the extent of crop damages as well. This can be seen in Figure 2.
 
-Present figure and code for plotting.
+```{r, fig.width=10, fig.height=6, dpi=300}
 
-```{r}
+# Calcultate total harm, filter out the top ten most harmful events and transform the dataset to long format (this will simplify plotting)
+top10econdat <- totecondat %>% 
+                group_by(EVTYPE) %>%
+                mutate(total_cost = total_propdmg + total_cropdmg) %>%
+                arrange(desc(total_cost)) %>%
+                .[1:10,] %>%
+                pivot_longer(c(-EVTYPE,-total_cost))
 
-## Plot
+# Plot
+top10econdat %>% 
+                ggplot(aes(x = reorder(EVTYPE, total_cost), y = value/10^9, fill = name)) + 
+                geom_bar(stat = "identity") +
+                labs(x = "Weather event", y = "Cost [Billion USD]") +
+                labs(title = "Economic Consequences from Weather Events in US 1996-2011") +
+                labs(subtitle = "Cost of damages in billion USD and type of damage") +
+                labs(caption = "Figure 2: The ten weather events with the highest total caused economic \ndamage in the US between January 1996 and November 2011.") +
+                theme(plot.caption = element_text(hjust = 0.5, vjust = -1)) +
+                theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+                theme(plot.margin = unit(c(1,0,1,0.2),"cm")) + 
+                scale_fill_discrete(name = "Type", labels = c("Crop damage", "Property damage"))
 
 ```
 
-Comment on figure.
+One can again see that floods vastly outnumber any other weather event in terms of economic consequences. An potential explanation for this can be found in the documentation, where it is mentioned that floods is the only event where the reporter is *required* to enter monetary damages even if it is a "guesstimate". This could obviously skew the data. Another observation one can make in the plot is that the event which is causing the highest crop damage is drought which is to expected.
 
 ---
 
 ## Discussion and conclusion
 
-Discussion of analysis and results.
-
-Summarize and conclude.
+We can now conclude the analysis and answer the questions. The answer to **question 1**, which event is most harmful to the population, is clearly **tornadoes** with over 20000 affected persons between 1996 and 2011. The answer to **question 2**, which event has greatest economic consequneces, is by a great margin **floods**. It could however be argued that this result is partly skewed due to mandatory filling in of monetary damages for floods even if they are inaccurate. In other events where the monetary damage is unclear, the value might be left blank in the report. 
