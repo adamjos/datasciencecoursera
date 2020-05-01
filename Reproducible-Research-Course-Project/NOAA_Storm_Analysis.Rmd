@@ -31,7 +31,7 @@ In this study the data is pre-processed, subsetted and then analysed, where tota
 
 Start by loading the required packages, then if the data is not present on the local machine, download and load it. 
 
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, cache=TRUE}
 ## Load required packages
 library(data.table)
 library(dplyr)
@@ -121,9 +121,8 @@ The data is now ready for analysis!
 
 ---
 
-## Results
-
-In this section we perform the analysis for the two questions and present the results, with one subsection per question. The first subsection tries to present result to answer question 1, which event is most harmhul to the population, and the second subsection tries to present result to answer question 2, which event is causing the most economic damage.  
+## Analysis
+In this section we perform the analysis for the two questions and prepare data to be plotted, with one subsection per question. The first subsection covers the analysis to answer question 1, which event is most harmhul to the population, and the second subsection covers the analysis to answer question 2, which event is causing the most economic damage.  
 
 ### Analysis for Q1
 
@@ -139,9 +138,9 @@ totharmdat %>% arrange(desc(total_fatalities)) %>% top_n(n = 10, wt = total_fata
 
 ```
 
-From these result one can see that when ranking the weather events by only total fatalities, excessive heat is ranked to be the most harmful. However one can observe that tornadoes, which is ranked number two in deadliness, has relatively high amount of caused injuries. In order to get a more clear view of how much harm a specific event is causing the population, total fatalities and total injuries are summed together and the top ten most harmful events are filtered out and plotted in Figure 1.
+From these result one can see that when ranking the weather events by only total fatalities, excessive heat is ranked to be the most harmful. However one can observe that tornadoes, which is ranked number two in deadliness, has relatively high amount of caused injuries. In order to get a more clear view of how much harm a specific event is causing the population, total fatalities and total injuries are summed together and the top ten most harmful events are filtered out and saved to prepare for plotting.
 
-```{r, fig.width=10, fig.height=6, dpi=300}
+```{r}
 
 # Calcultate total harm, filter out the top ten most harmful events and transform the dataset to long format (this will simplify plotting)
 top10harmdat <- totharmdat %>% 
@@ -151,28 +150,14 @@ top10harmdat <- totharmdat %>%
                 .[1:10,] %>%
                 pivot_longer(c(-EVTYPE,-total_harm))
 
-# Plot
-top10harmdat %>% 
-                ggplot(aes(x = reorder(EVTYPE, total_harm), y = value, fill = name)) + 
-                geom_bar(stat = "identity") + 
-                labs(x = "Weather event", y = "Count") +
-                labs(title = "Harm Caused to Population by Weather Events in US 1996-2011") +
-                labs(subtitle = "Number of affected persons and outcome") +
-                labs(caption = "Figure 1: The ten weather event which has caused the most harm to the population of US \nin terms of number of affected persons and outcome, between January 1996 and November 2011.") +
-                theme(plot.caption = element_text(hjust = 0.5, vjust = -1)) +
-                theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-                theme(plot.margin = unit(c(1,0,1,0.2),"cm")) + 
-                scale_fill_discrete(name = "Outcomes", labels = c("Fatalities", "Injuries"))
-                
-
 
 ```
 
-One can observe more clearly the magnitude of the difference between harmfulness in events, where tornadoes far exceeds the other weather types. Even though excessive heat have caused sligthly more fatalities, the number of injuries caused by tornadoes is a factor of three larger than the injuries caused by excesive heat. 
+Data for plotting the results to answer question 1 are now ready.
 
 ### Analysis for Q2
 
-In this section we perform analysis and present results to answer the second question, which weather event has most severe economic consequences. In order to perform the analysis, we start from the pre-processed data *econdat*. As a first step in the analysis we group the data per weather event and calculate the total property damages and total crop damages and print out the top ten weather events ranked by total property damages. 
+In this section we perform analysis and prepare data for plotting to answer the second question, which weather event has most severe economic consequences. In order to perform the analysis, we start from the pre-processed data *econdat*. As a first step in the analysis we group the data per weather event and calculate the total property damages and total crop damages and print out the top ten weather events ranked by total property damages. 
 
 ```{r}
 
@@ -184,9 +169,9 @@ totecondat %>% arrange(desc(total_propdmg), desc(total_cropdmg)) %>% top_n(n = 1
 
 ```
 
-From these results one can observe that floods have a value of total property damages with a magnitude higher than the second highest, tornado. Let's observe these results in a plot, where we get a clearer view of the extent of crop damages as well. This can be seen in Figure 2.
+From these results one can observe that floods have a value of total property damages with a magnitude higher than the second highest, tornado. In the same fashion that we prepared data for plotting in the analysis for question 1, we sum total property damage and total crop damage and save the ten weather events with highest total economic damage.
 
-```{r, fig.width=10, fig.height=6, dpi=300}
+```{r}
 
 # Calcultate total harm, filter out the top ten most harmful events and transform the dataset to long format (this will simplify plotting)
 top10econdat <- totecondat %>% 
@@ -196,6 +181,46 @@ top10econdat <- totecondat %>%
                 .[1:10,] %>%
                 pivot_longer(c(-EVTYPE,-total_cost))
 
+```
+
+Data for plotting the results to answer question 2 are now ready.
+
+---
+
+## Results
+In this section we present the result from the analysis.  
+
+### Results for Q1
+
+Using the data from the analysis for question 1, Figure 1 is created. One can observe in this plot the top ten weather events with the highest amount of harm caused to the population in the US between January 1996 and November 2011, in terms of number of affected person and the outcome.
+
+
+```{r, fig.width=10, fig.height=6, dpi=300}
+# Plot
+top10harmdat %>% 
+                ggplot(aes(x = reorder(EVTYPE, total_harm), y = value, fill = name)) + 
+                geom_bar(stat = "identity") + 
+                labs(x = "Weather event", y = "Count") +
+                labs(title = "Harm Caused to Population by Weather Events in US 1996-2011") +
+                labs(subtitle = "Number of affected persons and outcome") +
+                labs(caption = "Figure 1: The ten weather events which has caused the most harm to the population of US \nin terms of number of affected persons and outcome, between January 1996 and November 2011.") +
+                theme(plot.caption = element_text(hjust = 0.5, vjust = -1)) +
+                theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+                theme(plot.margin = unit(c(1,0,1,0.2),"cm")) + 
+                scale_fill_discrete(name = "Outcomes", labels = c("Fatalities", "Injuries"))
+                
+
+
+```
+
+What was previously seen in the analysis becomes even more clear as one can observe the magnitude of the difference between harmfulness in events, where tornadoes far exceeds the other weather types. Even though excessive heat have caused sligthly more fatalities, the number of injuries caused by tornadoes is a factor of three larger than the injuries caused by excesive heat. 
+
+
+### Results for Q2
+
+Using the data from the analysis for question 2, Figure 2 is created. One can observe in this plot the top ten weather events with the greatest economic consequence in the US between January 1996 and November 2011, in terms of cost in billion USD and type of damage.
+
+```{r, fig.width=10, fig.height=6, dpi=300}
 # Plot
 top10econdat %>% 
                 ggplot(aes(x = reorder(EVTYPE, total_cost), y = value/10^9, fill = name)) + 
@@ -211,7 +236,7 @@ top10econdat %>%
 
 ```
 
-One can again see that floods vastly outnumber any other weather event in terms of economic consequences. A potential explanation for this can be found in the documentation, where it is mentioned that floods is the only event where the reporter is *required* to enter monetary damages even if it is a "guesstimate". This could obviously skew the data. Another observation one can make in the plot is that the event which is causing the highest crop damage is drought, which could be expected.
+As was seen in the analysis, one can again see that floods vastly outnumber any other weather event in terms of economic consequences. A potential explanation for this can be found in the documentation, where it is mentioned that floods is the only event where the reporter is *required* to enter monetary damages even if it is a "guesstimate". This could obviously skew the data. Another observation one can make in the plot is that the event which is causing the highest crop damage is drought, which could be expected.
 
 ---
 
