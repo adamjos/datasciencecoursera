@@ -31,7 +31,7 @@ In this study the data is pre-processed, subsetted and then analysed, where tota
 
 Start by loading the required packages, then if the data is not present on the local machine, download and load it. 
 
-```{r, message=FALSE, warning=FALSE, cache=TRUE}
+```{r, message=FALSE, warning=FALSE}
 ## Load required packages
 library(data.table)
 library(dplyr)
