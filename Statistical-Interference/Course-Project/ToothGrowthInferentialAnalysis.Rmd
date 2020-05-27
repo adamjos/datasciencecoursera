@@ -1,0 +1,12 @@
+---
+title: "Tooth Growth Inferential Analysis"
+author: "Adam"
+date: '2020-05-27'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(tinytex.verbose = TRUE)
+```
+
