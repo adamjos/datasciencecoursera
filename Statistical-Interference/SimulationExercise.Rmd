@@ -3,10 +3,71 @@ title: "Simulation Exercise"
 author: "Adam"
 date: '2020-05-27'
 output: pdf_document
+fig_crop: false
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 options(tinytex.verbose = TRUE)
+library(ggplot2)
 ```
 
+## Synopsis
+
+This analysis is regarding investigating the central limit theorem, specifically with regards to the exponential distribution. 1000 Simulations of 40 exponentials are performed, where then the distribution of the sample mean and sample variance are compared to the population mean and variance. To highlight the normal property of the sample mean, as the number of samples grow large, the sample mean distribution is compared to that of the sampled exponential distribution.
+
+
+[Some presentation of the analysis and figure 1] 
+
+```{r}
+
+# Number of simulations
+sim <- 1000
+# Number of exponentials
+n <- 40
+# Rate 
+lambda <- 0.2 
+
+# Creating observations
+obs <- rexp(n*sim, rate = lambda)
+
+# Reformatting them into matrix form with dim [sim x n]
+mobs <- matrix(obs, sim, n)
+
+# Calculate sample means
+sampleMeans <- apply(mobs, 1, mean)
+
+ggplot() +
+  aes(sampleMeans) + 
+  geom_histogram(binwidth = 0.25, color = "black", fill = "steelblue") +
+  geom_vline(xintercept = 5, color = "firebrick3", size = 1.5) + 
+  labs(x = "Sample Mean", y = "Counts") +
+  labs(title = "Sample Means from an Exponential Distribution with" ~ lambda ~ "= 5") +
+  coord_cartesian(xlim = c(2,8))
+
+```
+
+[Explain what can be seen in the figure and what it entails]
+
+
+```{r}
+
+# Calculate sample variance
+sampleVar <- apply(mobs, 1, var)
+
+
+```
+
+[Figure here]
+
+[Explain figure]
+
+```{r}
+
+# Code chunk to plot the sample means together with samples from the exponential distribution
+
+```
+
+[Figure here]
+
+[Explain figure]
