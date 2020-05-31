@@ -72,7 +72,7 @@ trueMean <- 1/lambda
 
 ggplot() +
   aes(sampleMeans) + 
-  geom_histogram(aes(y=..density..), binwidth = 0.25, color = "black", fill = "steelblue") +
+  geom_histogram(aes(y=..density..), binwidth=0.25, color="black", fill="steelblue") +
   geom_density() +
   geom_vline(xintercept = muMean, color = "darkolivegreen3", lty = 5, size = 1.5) +
   geom_vline(xintercept = trueMean, color = "firebrick3", size = 1.5) + 
