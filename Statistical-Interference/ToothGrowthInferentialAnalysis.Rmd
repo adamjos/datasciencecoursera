@@ -90,7 +90,7 @@ We can see that we get with a p-value of $2.2e-14$ that the true value of the di
 ## Conclusion
 From the hypothesis test and the fact that we accepted the first null hypothesis and rejected the second null hypothesis, we conclude with answering the two questions posed at the beginning.
 
-**Q1: Does way of supplying the vitamin C have an effect on tooth growth?**
+**Q1: Does supplement method of vitamin C have an effect on tooth growth?**
 No, even though there exists traces of orange juice being the more effective method of supplement, there is not enough evidence to support this.
 
 **Q2: Does length have a proportional relation to vitamin C dosage?**  
