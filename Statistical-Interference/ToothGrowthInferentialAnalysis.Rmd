@@ -1,12 +1,97 @@
 ---
 title: "Tooth Growth Inferential Analysis"
-author: "Adam"
+author: "Adam J"
 date: '2020-05-27'
 output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, fig.width = 8, fig.height = 4)
 options(tinytex.verbose = TRUE)
+library(ggplot2)
+library(dplyr)
+set.seed(5)
 ```
 
+
+## Overview
+This analysis investigates the effect of vitamin C on tooth growth in guinea pigs, using the dataset ToothGrowth from R. The dataset contains 60 observations of length of odontoblasts (which are the cells responsible for tooth growth) seen in guinea pigs after having recieved vitamin C. All 60 guinea pigs received Vitamin C in doses of 0.5, 1 or 2mg/day by one of two different delivery methods, orange juice (OJ) or ascorbic acid (coded as VC). The two questions this analysis aims at answering are:
+
+**Q1: Does supplement method of vitamin C have an effect on tooth growth?**
+
+**Q2: Does length have a proportional relation to vitamin C dosage?**  
+
+
+## Analysis
+
+### Data exploration
+Load the data.
+```{r}
+data("ToothGrowth")
+```
+Let's see what the first observations of the dataset looks like.
+```{r}
+head(ToothGrowth)
+```
+We can see that the dataset have three variables. $len$ is the measured length (no unit specified), $supp$ is which supplement method (OJ or VC) that was used and $dose$ is the administered daily dosage in mg/day.
+
+
+In order to understand more about the distribution of the variables in the dataset, in Figure 1 length is plotted versus method of supplying vitamin C and dosage in mg/day.
+```{r}
+ggplot(data = ToothGrowth, aes(x = supp, y = len)) +
+  geom_violin(aes(fill = supp)) +
+  facet_grid(.~dose) +
+  labs(title = "Tooth Growth of Ginuea Pigs by Supplement Method and Dosage (mg/day)") +
+  labs(x = "Method", y = "Length")
+
+```
+One can observe that there seems to be an overall positive relationship between dosage and length. Once can also see that it seems like orange juice have a sligthly higher impact on length than the ascorbic acid. Let's test these observations more formally. In order to do that we need to make some assumptions about our data.
+
+
+### Assumptions
+
+1. The observations are i.i.d
+2. The observations are normally distributed
+
+### Hypothesis test
+
+Using our assumptions, we will test two hypothesis using the t-test. The first hypothesis that we will test is, **the method of supplement have no effect on the length**. In order to do this we produce two subsets of the data, one for each supplement method.
+
+```{r}
+OJ <- filter(ToothGrowth, supp == "OJ")
+VC <- filter(ToothGrowth, supp == "VC")
+```
+
+We now perform a two-sided t-test on the difference of the means of the two subsets, to check the first hypothesis.
+
+```{r}
+t.test(OJ$len, VC$len, paired = FALSE, var.equal = FALSE)
+```
+
+We can see that we get with a p-value of 0.06 that the true value of the difference is in the confidence interval $[-0.17, 7.57)$ and that we accept the null hypothesis that the method of supplement have no effect on the length.
+
+The second hypothesis we want to check is, **the length has no positive relationship with the dosage**.
+
+We do this by creating two subsets, one with all the observations having a dosage of 0.5 mg/day and another with all observations with dosage of 2 mg/day.
+
+```{r}
+high <- filter(ToothGrowth, dose == 2)
+low <- filter(ToothGrowth, dose == 0.5)
+```
+
+We now perform the one-sided t-test on the difference of the means of the two subsets, to check the second hypothesis.
+
+```{r}
+t.test(high$len, low$len, alternative = "greater", paired = FALSE, var.equal = FALSE)
+```
+
+We can see that we get with a p-value of $2.2e-14$ that the true value of the difference is in the confidence interval $[13.28, Inf)$ and that we reject the null hypothesis that the length has no positive relationship with the dosage.
+
+## Conclusion
+From the hypothesis test and the fact that we accepted the first null hypothesis and rejected the second null hypothesis, we conclude with answering the two questions posed at the beginning.
+
+**Q1: Does way of supplying the vitamin C have an effect on tooth growth?**
+No, even though there exists traces of orange juice being the more effective method of supplement, there is not enough evidence to support this.
+
+**Q2: Does length have a proportional relation to vitamin C dosage?**  
+Yes, evident from the data we could observe that higher dosages correlated to higher tooth growth.
