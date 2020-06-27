@@ -1,12 +1,45 @@
 ---
-title: "Analysis of Vehicle Attributes on Fuel Consumption"
-author: "Adam"
+title: "Analysis of Relationship of Vehicle Attributes with Fuel Consumption"
+author: "Adam J"
 date: '2020-06-27'
 output: pdf_document
+fig_crop: false
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, fig.width = 8, fig.height = 4)
+```
+
+## Overview
+This study aims at investigate the relationship between vehicle attributes and fuel consumption in miles per gallon, using the dataset `mtcars`. More specifically the study aims at answering the following two questions,
+
+**Q1:** Is an automatic or manual transmission better for MPG?
+
+**Q2:** Quantify the MPG difference between automatic and manual transmissions.
+
+The outline of the study is as follows. First an exploration of the data is performed, secondly model selection is performed by testing different candidates based on the results exploration. Residual plotting and diagnostic of the chosen model is then performed to ensure that no systematic errors are present. Uncertainty of the final model is quantified and presented, whereafter a conclusion to the two question of interest are presented.
+
+[Add some concrete results]
+
+## Analysis
+
+
+## Conclusion
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+## Appendix
+
+```{r ref.label=knitr::all_labels(), echo = T, eval = F}
 ```
 
 
