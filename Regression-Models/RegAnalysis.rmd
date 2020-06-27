@@ -1,0 +1,12 @@
+---
+title: "Analysis of Vehicle Attributes on Fuel Consumption"
+author: "Adam"
+date: '2020-06-27'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
