@@ -8,22 +8,57 @@ fig_crop: false
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.width = 8, fig.height = 4)
+library(tidyverse)
 ```
 
 ## Overview
-This study aims at investigate the relationship between vehicle attributes and fuel consumption in miles per gallon, using the dataset `mtcars`. More specifically the study aims at answering the following two questions,
+This study aims at investigating the relationship between vehicle attributes and fuel consumption in miles per gallon (MPG), using the dataset `mtcars`. More specifically the study aims at answering the two following questions,
 
 **Q1:** Is an automatic or manual transmission better for MPG?
 
 **Q2:** Quantify the MPG difference between automatic and manual transmissions.
 
-The outline of the study is as follows. First an exploration of the data is performed, secondly model selection is performed by testing different candidates based on the results exploration. Residual plotting and diagnostic of the chosen model is then performed to ensure that no systematic errors are present. Uncertainty of the final model is quantified and presented, whereafter a conclusion to the two question of interest are presented.
+The outline of the study is as follows. First an exploration of the data is performed, after which model selection is performed by testing different candidates based on the results of the exploration. Residual plotting and diagnostic of the chosen model is then performed to ensure that no systematic errors are present. Uncertainty of the final model is quantified and presented, whereafter a conclusion to the two question of interest are presented.
 
 [Add some concrete results]
 
 ## Analysis
 
+### Exploration 
+In order to get an understanding of the relationship of MPG and transmission type, a boxplot is produced which can be seen in the appendix. One can clearly see that manual transmissions tend to have higher MPG than an automatic type. Let's investigate if this relationship hold true when accounting for other variables as well.
 
+```{r}
+g <- ggplot(mtcars, aes(x = as.factor(am), y = mpg, fill = as.factor(am)))
+g + geom_boxplot()
+```
+
+### Model selection
+
+```{r}
+fit <- lm(mpg ~ ., mtcars)
+summary(fit)
+
+```
+
+It can be seen that no predictor is significant
+
+Plot coefficients
+
+```{r}
+# Create data frame of regression coefficients 
+dat <- data.frame(coef(fit))
+names(dat) <- c("Coef")
+
+#Remove intercept term
+dat2 <- tail(dat, -1)
+
+# Plot 
+dat2 %>%
+  ggplot(aes(x = reorder(row.names(.), Coef), y = Coef, fill = Coef)) +
+  geom_bar(stat = "identity")
+
+
+```
 ## Conclusion
 
 
