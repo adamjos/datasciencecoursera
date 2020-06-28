@@ -27,6 +27,8 @@ The outline of the study is as follows. First an exploration of the data is perf
 ### Exploration 
 In order to get an understanding of the relationship of MPG and transmission type, a boxplot is produced which can be seen in the appendix. One can clearly see that manual transmissions tend to have higher MPG than an automatic type. Let's investigate if this relationship hold true when accounting for other variables as well.
 
+[Include a correlation plot]
+
 ```{r}
 g <- ggplot(mtcars, aes(x = as.factor(am), y = mpg, fill = as.factor(am)))
 g + geom_boxplot()
@@ -34,13 +36,23 @@ g + geom_boxplot()
 
 ### Model selection
 
+[Talk about which covariates to include. Only include covariates that are confounders. Leave out covariates that are downstream effects of transmission type.]
+
+
 ```{r}
 fit <- lm(mpg ~ ., mtcars)
 summary(fit)
 
 ```
 
-It can be seen that no predictor is significant
+It can be seen that no predictor is significant. The confidence interval of AM is XX and thus contains zero.
+
+```{r}
+fit2 <- lm(mpg ~ am + hp + qsec + vs + carb, mtcars)
+summary(fit2)
+```
+
+AM is significant.
 
 Plot coefficients
 
@@ -59,7 +71,9 @@ dat2 %>%
 
 
 ```
+
 ## Conclusion
+A multivariate regression was made to understand the relationship between transmission type and fuel consumption in MPG. 
 
 
 
