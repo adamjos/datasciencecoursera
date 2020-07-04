@@ -34,6 +34,7 @@ g <- ggplot(mtcars, aes(x = as.factor(am), y = mpg, fill = as.factor(am)))
 g + geom_boxplot()
 ```
 
+
 ### Model selection
 
 [Talk about which covariates to include. Only include covariates that are confounders. Leave out covariates that are downstream effects of transmission type.]
@@ -45,7 +46,9 @@ summary(fit)
 
 ```
 
-It can be seen that no predictor is significant. The confidence interval of AM is XX and thus contains zero.
+It can be seen that no predictor is significant. The confidence interval of AM is XX and thus contains zero. Let's try another model with fewer covariates. It could be that by including doewnstream effects of the specific transmission type you introduce variance, by the variance inflation effect since your covariates are strongly correlated to each other. This will make it harder to achieve significant results with as few data points that is present in this dataset.
+
+We see that weight has the highest effect on on MPG. Investigating the difference in weight in the car models that have an automatic transmission compared to the ones with a manual one, it is a clear distingiuson in this dataset between the two. This can be seen in Figure XX in the Appendix, where the models having an automatic transmission have higher weight. However one can observe that the mean difference in weight is around 1000 lbs, far higher than the average weight of a transmission, assuming the the weight of a transmission ranges from 100-400 lbs, irrespectable of type. Let's include weight in the model together with transmission type to account for this 
 
 ```{r}
 fit2 <- lm(mpg ~ am + hp + qsec + vs + carb, mtcars)
