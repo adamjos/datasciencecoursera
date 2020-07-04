@@ -1,5 +1,5 @@
 ---
-title: "Analysis of Relationship of Vehicle Attributes with Fuel Consumption"
+title: "Analysis of Relationship Between Vehicle Attributes and Fuel Consumption"
 author: "Adam J"
 date: '2020-06-27'
 output: pdf_document
@@ -7,8 +7,9 @@ fig_crop: false
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, fig.width = 8, fig.height = 4)
+knitr::opts_chunk$set(echo = TRUE, fig.width = 8)
 library(tidyverse)
+library(explore)
 ```
 
 ## Overview
@@ -20,27 +21,16 @@ This study aims at investigating the relationship between vehicle attributes and
 
 The outline of the study is as follows. First an exploration of the data is performed, after which model selection is performed by testing different candidates based on the results of the exploration. Residual plotting and diagnostic of the chosen model is then performed to ensure that no systematic errors are present. Uncertainty of the final model is quantified and presented, whereafter a conclusion to the two question of interest are presented.
 
-[Add some concrete results]
-
-## Analysis
-
-### Exploration 
-In order to get an understanding of the relationship of MPG and transmission type, a boxplot is produced which can be seen in the appendix. One can clearly see that manual transmissions tend to have higher MPG than an automatic type. Let's investigate if this relationship hold true when accounting for other variables as well.
-
-[Include a correlation plot]
-
-```{r}
-g <- ggplot(mtcars, aes(x = as.factor(am), y = mpg, fill = as.factor(am)))
-g + geom_boxplot()
-```
-
+### Exploratory Analysis 
+In order to get an understanding of the relationship of MPG and transmission type, a boxplot is produced in Figure 1 which can be seen in the Appendix. One can clearly see that manual transmissions tend to have higher MPG than an automatic type. Let's investigate if this relationship hold true when accounting for other variables as well.
 
 ### Model selection
+Wh
 
 [Talk about which covariates to include. Only include covariates that are confounders. Leave out covariates that are downstream effects of transmission type.]
 
 
-```{r}
+```{r, echo=FALSE, results='hide'}
 fit <- lm(mpg ~ ., mtcars)
 summary(fit)
 
@@ -50,48 +40,35 @@ It can be seen that no predictor is significant. The confidence interval of AM i
 
 We see that weight has the highest effect on on MPG. Investigating the difference in weight in the car models that have an automatic transmission compared to the ones with a manual one, it is a clear distingiuson in this dataset between the two. This can be seen in Figure XX in the Appendix, where the models having an automatic transmission have higher weight. However one can observe that the mean difference in weight is around 1000 lbs, far higher than the average weight of a transmission, assuming the the weight of a transmission ranges from 100-400 lbs, irrespectable of type. Let's include weight in the model together with transmission type to account for this 
 
-```{r}
+```{r, echo=FALSE, results='hide'}
 fit2 <- lm(mpg ~ am + hp + qsec + vs + carb, mtcars)
 summary(fit2)
 ```
 
 AM is significant.
 
-Plot coefficients
-
-```{r}
-# Create data frame of regression coefficients 
-dat <- data.frame(coef(fit))
-names(dat) <- c("Coef")
-
-#Remove intercept term
-dat2 <- tail(dat, -1)
-
-# Plot 
-dat2 %>%
-  ggplot(aes(x = reorder(row.names(.), Coef), y = Coef, fill = Coef)) +
-  geom_bar(stat = "identity")
-
-
-```
 
 ## Conclusion
 A multivariate regression was made to understand the relationship between transmission type and fuel consumption in MPG. 
 
 
-
-
-
-
-
-
-
-
-
 \newpage
 ## Appendix
 
-```{r ref.label=knitr::all_labels(), echo = T, eval = F}
+```{r, echo=FALSE, results='hide'}
+g <- ggplot(mtcars, aes(x = as.factor(am), y = mpg, fill = as.factor(am)))
+g +
+  geom_boxplot() +
+  labs(x = "Transmission type [0 - Automatic, 1 - Manual]", y = "Miles per Gallon") + 
+  labs(title = "Fuel consumption based on transmission type") +
+  labs(caption = "Figure 1: Fuel consumption in miles per gallon for vehicles by transmission type.") + 
+  theme(plot.caption = element_text(hjust = 0.5, vjust = 0.5)) + 
+  scale_fill_discrete(name = "Transmission", labels = c("Automatic","Manual"))
 ```
 
+```{r, echo=FALSE, fig.height=20, fig.width=15}
+kable()
 
+mtcars %>% select(mpg, wt , am, hp, cyl, disp, drat) %>% explore_all(target = mpg)
+
+```
