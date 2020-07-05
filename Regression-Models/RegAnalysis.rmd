@@ -10,6 +10,7 @@ fig_crop: false
 knitr::opts_chunk$set(echo = TRUE, fig.width = 8)
 library(tidyverse)
 library(explore)
+library(knitr)
 ```
 
 ## Overview
@@ -22,40 +23,34 @@ This study aims at investigating the relationship between vehicle attributes and
 The outline of the study is as follows. First an exploration of the data is performed, after which model selection is performed by testing different candidates based on the results of the exploration. Residual plotting and diagnostic of the chosen model is then performed to ensure that no systematic errors are present. Uncertainty of the final model is quantified and presented, whereafter a conclusion to the two question of interest are presented.
 
 ### Exploratory Analysis 
-In order to get an understanding of the relationship of MPG and transmission type, a boxplot is produced in Figure 1 which can be seen in the Appendix. One can clearly see that manual transmissions tend to have higher MPG than an automatic type. Let's investigate if this relationship hold true when accounting for other variables as well.
+In order to get an understanding of the relationship of MPG and transmission type, a boxplot is produced in Figure 1 which can be seen in the Appendix. One can clearly see that manual transmissions tend to have higher MPG than an automatic type. Let's investigate if this relationship hold true when accounting for other variables as well. In Figure 2, MPG is plotted against weight. One can observe that they share a strong relationship as well.
 
 ### Model selection
-Wh
+Let us first fit a model where we only consider transmission type.
 
-[Talk about which covariates to include. Only include covariates that are confounders. Leave out covariates that are downstream effects of transmission type.]
-
-
-```{r, echo=FALSE, results='hide'}
-fit <- lm(mpg ~ ., mtcars)
-summary(fit)
-
+```{r}
+fit <- lm(mpg ~ am, data = mtcars)
+summary(fit)$coefficients
 ```
 
-It can be seen that no predictor is significant. The confidence interval of AM is XX and thus contains zero. Let's try another model with fewer covariates. It could be that by including doewnstream effects of the specific transmission type you introduce variance, by the variance inflation effect since your covariates are strongly correlated to each other. This will make it harder to achieve significant results with as few data points that is present in this dataset.
+We can see that the relationship is significant, with a p-value of `r summary(fit)$coefficients[2, 4]`. However we also observed a strong relationship with weight from the exploration. It would also unreasonable if all variation in MPG could be explained by a binary variable. Let's fit a second model where we account for weight as well.
 
-We see that weight has the highest effect on on MPG. Investigating the difference in weight in the car models that have an automatic transmission compared to the ones with a manual one, it is a clear distingiuson in this dataset between the two. This can be seen in Figure XX in the Appendix, where the models having an automatic transmission have higher weight. However one can observe that the mean difference in weight is around 1000 lbs, far higher than the average weight of a transmission, assuming the the weight of a transmission ranges from 100-400 lbs, irrespectable of type. Let's include weight in the model together with transmission type to account for this 
-
-```{r, echo=FALSE, results='hide'}
-fit2 <- lm(mpg ~ am + hp + qsec + vs + carb, mtcars)
-summary(fit2)
+```{r}
+fit2 <- lm(mpg ~ am + wt, data = mtcars)
+summary(fit2)$coefficients
 ```
 
-AM is significant.
+Here we can see that transmission type is no longer significant, with a p-value of `r summary(fit2)$coefficients[2, 4]`. The confidence interval of the transmission regressor coefficient is [`r confint(fit2)[2,]` ], which contains zero. Let us look at the residual plot to see if there are some variation left uncaptured.  The plot is presented in the Appendix. One can see that the residuals are fairly normally distributed around zero. Let us also investigate the assumption of normality of the residuals directly by looking at a Q-Q plot, which can also be found in the Appendix. One can see that the residuals follows the line fairly well, which allow us to conclude that the residuals are normally distributed. 
 
 
 ## Conclusion
-A multivariate regression was made to understand the relationship between transmission type and fuel consumption in MPG. 
+A multivariate regression was made to understand the relationship between transmission type and fuel consumption in MPG. A first model where only transmission type was used as a regressor variable was fitted. The relationship between transmission type was  
 
 
 \newpage
 ## Appendix
 
-```{r, echo=FALSE, results='hide'}
+```{r, echo=FALSE}
 g <- ggplot(mtcars, aes(x = as.factor(am), y = mpg, fill = as.factor(am)))
 g +
   geom_boxplot() +
@@ -66,9 +61,48 @@ g +
   scale_fill_discrete(name = "Transmission", labels = c("Automatic","Manual"))
 ```
 
-```{r, echo=FALSE, fig.height=20, fig.width=15}
-kable()
+
+
+```{r, echo=FALSE}
+g <- ggplot(mtcars, aes(x = wt, y = mpg))
+g +
+  geom_point(color = "steelblue") +
+  labs(x = "Weight [1000 lbs]", y = "Miles per Gallon") + 
+  labs(title = "Fuel consumption compared to vehicle weight") +
+  labs(caption = "Figure 2: Fuel consumption in miles per gallon compared to vehicle weight.") + 
+  theme(plot.caption = element_text(hjust = 0.5, vjust = 0.5))
+```
+
+```{r, echo=FALSE}
+plot(fit2, which = c(1,2))
+```
+
+```{r, echo=FALSE, fig.height=20, fig.width=15, include=FALSE}
+mtcars_desc = c("Miles/(US) gallon",
+                "Number of cylinders",
+                "Displacement (cu.in.)",
+                "Gross horsepower",
+                "Rear axle ratio",
+                "Weight (1000 lbs)",
+                "1/4 mile time",
+                "Engine (0 = V-shaped, 1 = straight)",
+                "Transmission (0 = automatic, 1 = manual)",
+                "Number of forward gears",
+                "Number of carburetors")
+df <- data.frame(names(mtcars), mtcars_desc)
+names(df) <- c("Variable", "Description")
+
+kable(df, caption = "Variables in mtcars dataset")
 
 mtcars %>% select(mpg, wt , am, hp, cyl, disp, drat) %>% explore_all(target = mpg)
 
 ```
+
+
+It can be seen that no predictor is significant. The confidence interval of AM is XX and thus contains zero. Let's try another model with fewer covariates. It could be that by including doewnstream effects of the specific transmission type you introduce variance, by the variance inflation effect since your covariates are strongly correlated to each other. This will make it harder to achieve significant results with as few data points that is present in this dataset.
+
+We see that weight has the highest effect on on MPG. Investigating the difference in weight in the car models that have an automatic transmission compared to the ones with a manual one, it is a clear distingiuson in this dataset between the two. This can be seen in Figure XX in the Appendix, where the models having an automatic transmission have higher weight. However one can observe that the mean difference in weight is around 1000 lbs, far higher than the average weight of a transmission, assuming the the weight of a transmission ranges from 100-400 lbs, irrespectable of type. Let's include weight in the model together with transmission type to account for this 
+
+[Reference to residual plot and diagnostics in the appendix]
+
+
