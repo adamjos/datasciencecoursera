@@ -1,5 +1,5 @@
 ---
-title: "Human Activity Recognition"
+title: "Human Activity Recognition Project"
 author: "Adam J"
 date: '2020-07-17'
 output: html_document
@@ -9,22 +9,40 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## What you should submit
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+The goal of your project is to predict the manner in which they did the exercise. This is the "classe" variable in the training set. You may use any of the other variables to predict with. You should create a report describing how you built your model, how you used cross validation, what you think the expected out of sample error is, and why you made the choices you did. You will also use your prediction model to predict 20 different test cases.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+### Peer Review Portion
 
-```{r cars}
-summary(cars)
-```
+Your submission for the Peer Review portion should consist of a link to a Github repo with your R markdown and compiled HTML file describing your analysis. Please constrain the text of the writeup to < 2000 words and the number of figures to be less than 5. It will make it easier for the graders if you submit a repo with a gh-pages branch so the HTML page can be viewed online (and you always want to make it easy on graders :-).
 
-## Including Plots
+## Overview
+Summary of the project. What is the purpose, what questions is of interest to answer, what was done in order to answer them? What was the main results and what conclusions can or can't we draw from them?
 
-You can also embed plots, for example:
+## Preprocessing
+Clean the data 
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+ - Are there NA values? 
+ - Is the data skewed? 
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Create training, validation and test sets.
+
+## Data Exploration
+Here we explore the data and look for pattern and think of potential candidates for model selection. 
+
+ - Is there a nonlinear or linear relationship between the outcome (activity class) and the predictors (measurements from accelerometers)?
+ - What is the approximate distribution of the variables in the dataset?
+
+## Model selection
+Investigate different models and how they compare on the validation set after having been trained on the training set.
+
+## Model evaluation
+Do a final evaluation on the selected model by testing to predict on unseen data from the test set.
+
+## Discussion & Conclusion
+Discuss the resulting accuracy or similar measures achieved in the final model evaluation and conclude if it is sufficient to answer the question of interest and if the purpose of the project was fulfilled.
+
+
+
+
