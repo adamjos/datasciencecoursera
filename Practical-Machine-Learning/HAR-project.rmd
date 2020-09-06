@@ -2,15 +2,23 @@
 title: "Human Activity Recognition Project"
 author: "Adam J"
 date: '2020-07-17'
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+set.seed(12321)
+library(dplyr)
+library(ggplot2)
+library(caret)
 ```
 
 
 ## Overview
+The puspose of this project is to answer the question, can one classify the correctness of a physical activity based on measurement data from accelerometer placed on the subjects body, given a data set containing labeled measurements from all different classes?
+
 Summary of the project. What is the purpose, what questions is of interest to answer, what was done in order to answer them? What was the main results and what conclusions can or can't we draw from them?
 
 ## Preprocessing
@@ -25,8 +33,19 @@ Create training, validation and test sets.
 trainDat <- read.csv("trainDat.csv")
 testDat <- read.csv("testDat.csv")
 
-# Select columns with no NA values
-dat <- trainDat[, colSums(is.na(trainDat)) == 0]
+# Select columns with NA values, these are the variables which aggregate the other variables per time window
+dat <- trainDat[, colSums(is.na(trainDat)) != 0]
+
+# Append the class variable along with the seven first variables in trainDat
+dat <- data.frame(trainDat[,(1:7)], dat, trainDat$classe)
+
+# Rename the class variable
+names(dat)[dim(dat)[2]] <- "classe"
+
+# Filter out observations containing aggregated window information only
+dat <- filter(dat, new_window == "yes")
+
+preProcDat <- dat[, -(1:7)]
 
 ```
 
