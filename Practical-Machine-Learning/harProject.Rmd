@@ -1,0 +1,151 @@
+---
+title: "Human Activity Recognition Project"
+author: "Adam J"
+date: '2021-01-10'
+output:
+  html_document: default
+  pdf_document: default
+  
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(caret)
+library(randomForest)
+library(parallel)
+library(doParallel)
+```
+
+- [Overview](#overview)  
+- [Data Exploration](#data-exploration)  
+- [Data Cleaning](#data-cleaning)  
+- [Model Training and Selection](#model-training-and-selection)  
+- [Prediction](#prediction)  
+- [Conclusion](#conclusion)  
+- [Appendix](#appendix)  
+
+## Overview
+The Weight Lifting Excercises Dataset collected in the human activity recognition research performed by Velloso et al. contains data from six participants equipped with accelerometers on their body, performing biceps curls in correct and incorrect ways ([more info here](http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har)). Available in the dataset are data from accelerometers on the belt, forearm, arm, and dumbell of the six participants. The participants each performed biceps curls in following five ways, exactly according to specification (Class A), throwing the elbows to the front (Class B), lifting the dumbell only halfway (Class C), lowering the dumbell only halfway (Class D) and throwing hips to the front (Class E). The purpose of this analysis is to answer the question, can one classify the correctness of a physical activity based on labeled measurement data from accelerometers placed on the participants bodies? 
+
+The steps of the analysis are cleaning of the data, model selection and training where three different models are trained using a ten-fold cross-validation, evaluation of the selected model by performing prediction on the test data and lastly a concluding remark.
+
+## Data Exploration
+
+In the Appendix there can be seen an output where the variables of the data is plotted. The dataset contains 19622 observations with a total of 160 variables. It can be seen that a lot variables contain a lot of NA and empty values.
+
+## Data Cleaning
+
+To begin with, all variables that does not contain NA or empty fields are filtered out. The variables that are being discarded are aggregated values such as averages, minimums, maximums and standard deviations, and will only be computed after a participant has fully completed an activity. These variables will thus contain a lot of NA and empty values, and imputation does not make sense for these variables and are thus discarded. The first seven variables are then discarded since they contain information that is not useful for classification, such as name of the subject, timestamps and data regarding the when a full activity was completed by a subject. Finally the data is divided into a training set (80%) and a test set (20%) to be able to evaluate the model on unseen data.
+
+```{r}
+
+trainDat <- read.csv("trainDat.csv")
+
+# Select variables without NA and empty fields
+dat <- trainDat[, !apply(trainDat, 2, function(x) any(is.na(x) || x==""))]
+
+# Remove seven first variables since they are not relevant for classification
+dat <- dat[, -(1:7)]
+
+# Store predictors and outout as separate matricies
+predictors <- dat %>% select(-classe) %>% as.matrix()
+output <- as.matrix(dat$classe)
+
+# Set seed for reproducibility
+set.seed(12321)
+
+# Create a training set and a test set
+trainSamples <- createDataPartition(output, p = 0.8, list = FALSE)
+
+train.predictors <- predictors[trainSamples,]
+train.output <- output[trainSamples,]
+
+test.predictors <- predictors[-trainSamples,]
+test.output <- output[-trainSamples,]
+
+```
+
+## Model Training and Selection
+
+The three models chosen for evaluation are a Linear Discriminant Analysis (LDA), a Support Vector Machine (SVM) with a polynomial kernel and a Random Forest (RF). The LDA is a simpler linear model, while the two other are non-linear ones used for classification. In order to be able evaluate which model is best suited for this task all three will be evaluated by a ten-fold cross-validation. The model which achieves the highest accuracy on the validation will be chosen.
+
+Begin by setting up a cluster for parallel computing using the `parallel` and `doParallel` packages. Then configure the training, where a ten-fold cross-validation as mentioned is used to tune the model. This works by splitting the training data into ten folds, where one at the time is withheld from the training and used to validate. The average accuracy is then considered over all of the folds and the parameters of the model are chosen so that this accuracy is maximized. This approach also gives an estimate of the out-of-bag (OOB) error rate since the validation error is computed using the withheld observations that was not part of training for a specific fold.
+
+```{r, cache=TRUE}
+# Setup core cluster for parallel computing
+cluster <- makeCluster(detectCores() - 1) # convention to leave 1 core for OS
+registerDoParallel(cluster)
+
+# Configure and start training
+train_Control <- trainControl(method = "cv", number = 10, allowParallel = TRUE, savePredictions = TRUE)
+modelRF <- train(x = train.predictors, y = train.output, trControl = train_Control, method = "rf", importance = TRUE)
+modelSVM <- train(x = train.predictors, y = train.output, trControl = train_Control, method = "svmPoly", preProcess = c("center","scale"))
+modelLDA <- train(x = train.predictors, y = train.output, trControl = train_Control, method = "lda", preProcess = c("center","scale"))
+
+# Stop core cluster
+stopCluster(cluster)
+registerDoSEQ()
+
+```
+
+```{r}
+confusionMatrix(modelLDA)
+confusionMatrix(modelSVM)
+confusionMatrix(modelRF)
+```
+
+One can observe that the LDA achieved an accuracy of 69%, while both the SVM and RF models achieved an accuracy of around 99.4%. The RF model achieved a sligthly higher accuracy and goes much faster to train so this model is chosen.
+
+```{r}
+print(modelRF$finalModel)
+```
+
+One can observe that the final RF model had 500 trees and that 27 variables was used to split the observations in a specific fold. It achieved an validation accuracy of 99.41% and an estimated OOB error rate of 0.59%. The error rate is plotted against the numbers of trees in Figure 1.
+
+```{r}
+# Error rate vs nr of trees
+plot(modelRF$finalModel, log="y", main="Error Rate vs Number of Trees", sub="Figure 1. Error rate versus the number of trees used in RF model.", lty=1, lwd=2)
+legend("topright", colnames(modelRF$finalModel$err.rate), col=1:6, cex = 0.8, fill=1:6)
+
+```
+
+One can see how the error rate for all classes including the OOB converges after about 80 trees. In Figure 2 the variable importance is plotted, which corresponds to how much of a decrease in accuracy and Gini metric one can expect to see when not including a specific varible in the model, i.e. higher value corresponds to having a higher a effect on prediction outcome.
+
+```{r}
+# Variable importance
+varImpPlot(modelRF$finalModel, main = "Variable importance", pch = 19, color = "steelblue", n.var = 10)
+title(sub="Figure 2. Importance of variables used in the RF model based on accuracy and gini metrics.", line = 4.1)
+
+```
+
+One can see how *roll_belt*, *yaw_belt* and *pitch_forearm* are the top three most important variables for accurate predictions.
+
+## Prediction
+
+The model is then used to predict the classes of the observations in the test set.
+
+```{r}
+# Predict
+predictions <- predict(modelRF$finalModel, newdata = test.predictors)
+print(mean(predictions == test.output))
+
+```
+
+One can see that the model achieves an accuracy of 99.39% on the test set.
+
+## Conclusion
+
+To answer the question of the analysis, yes, given the results in this study it seems that one can indeed classify the correctness of a physical activity a subject has performed based on accelerometer measurements. A Random Forest model was trained which achieved an accuracy of 99.41% on the validation set and an accuracy of 99.39% on the test set. The variables that was the most important for accurate predictions was *roll_belt*, *yaw_belt* and *pitch_forearm*.
+
+
+
+## Appendix
+
+```{r}
+str(trainDat)
+```
+
+
+
+
